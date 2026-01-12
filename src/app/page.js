@@ -11,15 +11,82 @@ import {
     MessageSquare,
     Star
 } from "lucide-react";
-import { siteConfig, products, blogPosts, testimonials } from "@/lib/data";
+import { siteConfig, products, blogPosts, testimonials, faqs } from "@/lib/data";
 
 export default function HomePage() {
     const featuredProducts = products.filter((p) => p.featured);
-    const latestBlogs = blogPosts.slice(0, 3);
     const featuredTestimonials = testimonials.slice(0, 3);
+    const latestBlogs = blogPosts.slice(0, 3);
+
+    // SEO: Unified JSON-LD for Local Business & FAQ
+    const jsonLd = [
+        {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": siteConfig.name,
+            "image": "https://images.unsplash.com/photo-1595428774223-ef52624120d2",
+            "telephone": siteConfig.phone,
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": siteConfig.address.street,
+                "addressLocality": siteConfig.address.locality,
+                "addressRegion": siteConfig.address.region,
+                "postalCode": siteConfig.address.postalCode,
+                "addressCountry": siteConfig.address.country
+            },
+            "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "19.4124",
+                "longitude": "72.8397"
+            },
+            "openingHoursSpecification": [
+                {
+                    "@type": "OpeningHoursSpecification",
+                    "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                    "opens": "09:00",
+                    "closes": "18:00"
+                },
+                {
+                    "@type": "OpeningHoursSpecification",
+                    "dayOfWeek": "Saturday",
+                    "opens": "09:00",
+                    "closes": "13:00"
+                }
+            ],
+            "priceRange": "₹₹",
+            "review": featuredTestimonials.map(t => ({
+                "@type": "Review",
+                "author": { "@type": "Person", "name": t.name },
+                "datePublished": t.date,
+                "reviewBody": t.content,
+                "reviewRating": {
+                    "@type": "Rating",
+                    "ratingValue": t.rating,
+                    "bestRating": "5"
+                }
+            })),
+            "url": "https://finesteelfurniture.vercel.app"
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": faqs.map(faq => ({
+                "@type": "Question",
+                "name": faq.question,
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": faq.answer
+                }
+            }))
+        }
+    ];
 
     return (
         <div className="flex flex-col bg-white">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
 
             {/* --- HERO: ARCHITECTURAL PRECISION --- */}
             <section className="relative min-h-[90vh] flex items-center bg-[#0F172A] pt-20 overflow-hidden">
@@ -58,7 +125,7 @@ export default function HomePage() {
                     </div>
 
                     <div className="lg:col-span-5 relative">
-                        <div className="relative z-20 rounded-[2.5rem] overflow-hidden border border-slate-800 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]">
+                        <div className="relative z-20 rounded-[2.5rem] overflow-hidden border border-slate-800 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] p-4">
                             <Image
                                 src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=800&q=80"
                                 alt="High-Quality Industrial Steel Cupboard"
@@ -149,6 +216,28 @@ export default function HomePage() {
                                         <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">{t.role}</p>
                                     </div>
                                 </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* --- FAQ: EXPERT ANSWERS --- */}
+            <section className="py-32 px-6 bg-slate-50">
+                <div className="max-w-4xl mx-auto">
+                    <div className="text-center mb-16">
+                        <span className="text-blue-600 font-bold uppercase tracking-widest text-xs mb-4 block">Knowledge Base</span>
+                        <h2 className="text-4xl font-black text-slate-900 mb-6">Common Questions</h2>
+                    </div>
+                    <div className="grid gap-6">
+                        {faqs.map((faq, i) => (
+                            <div key={i} className="bg-white p-8 rounded-3xl border border-slate-100 hover:border-blue-500/30 transition-all">
+                                <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-start gap-3">
+                                    <span className="text-blue-500 mt-1">Q.</span> {faq.question}
+                                </h3>
+                                <p className="text-slate-600 leading-relaxed pl-8 border-l-2 border-slate-100 ml-1.5">
+                                    {faq.answer}
+                                </p>
                             </div>
                         ))}
                     </div>

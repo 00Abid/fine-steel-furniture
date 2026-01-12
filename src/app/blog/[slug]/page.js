@@ -10,6 +10,34 @@ export async function generateStaticParams() {
     }));
 }
 
+// SEO: Dynamic Metadata Generation
+export async function generateMetadata({ params }) {
+    const { slug } = await params;
+    const post = blogPosts.find((p) => p.slug === slug);
+
+    if (!post) return { title: 'Post Not Found' };
+
+    return {
+        title: post.title,
+        description: post.excerpt,
+        openGraph: {
+            title: post.title,
+            description: post.excerpt,
+            type: 'article',
+            publishedTime: post.publishedAt,
+            authors: [post.author],
+            images: [
+                {
+                    url: post.image,
+                    width: 1200,
+                    height: 630,
+                    alt: post.title,
+                }
+            ],
+        },
+    };
+}
+
 // Make the component async to handle params correctly
 export default async function BlogPostPage({ params }) {
     // In Next.js 15+, you must await params
@@ -21,8 +49,49 @@ export default async function BlogPostPage({ params }) {
         notFound();
     }
 
+    // SEO: Blog Posting Schema & Breadcrumb
+    const articleSchema = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": post.title,
+        "image": post.image,
+        "datePublished": post.publishedAt,
+        "dateModified": post.updatedAt,
+        "author": {
+            "@type": "Person",
+            "name": post.author
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Fine Steel Furniture",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://finesteelfurniture.vercel.app/logo.webp"
+            }
+        },
+        "description": post.excerpt,
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://finesteelfurniture.vercel.app/blog/${post.slug}`
+        }
+    };
+
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://finesteelfurniture.vercel.app" },
+            { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://finesteelfurniture.vercel.app/blog" },
+            { "@type": "ListItem", "position": 3, "name": post.title, "item": `https://finesteelfurniture.vercel.app/blog/${post.slug}` }
+        ]
+    };
+
     return (
         <article className="min-h-screen bg-white pb-20">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify([articleSchema, breadcrumbSchema]) }}
+            />
             <section className="bg-[#0F172A] py-20 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-10" style={{
                     backgroundImage: `radial-gradient(#94a3b8 1px, transparent 1px)`,

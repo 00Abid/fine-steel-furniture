@@ -18,8 +18,35 @@ export default async function ProductsPage({ searchParams }) {
         category === "all" || p.category === category
     );
 
+    // SEO: Product List Schema & Breadcrumb
+    const productSchema = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "itemListElement": filteredProducts.map((product, index) => ({
+            "@type": "ListItem",
+            "position": index + 1,
+            "url": `https://finesteelfurniture.vercel.app/products#${product.slug}`,
+            "name": product.name,
+            "image": product.image,
+            "description": product.shortDescription
+        }))
+    };
+
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://finesteelfurniture.vercel.app" },
+            { "@type": "ListItem", "position": 2, "name": "Products", "item": "https://finesteelfurniture.vercel.app/products" }
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-white">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify([productSchema, breadcrumbSchema]) }}
+            />
             {/* --- PAGE HEADER --- */}
             <section className="bg-[#0F172A] py-20 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-10" style={{
