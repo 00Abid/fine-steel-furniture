@@ -1,9 +1,10 @@
 import "./globals.css";
 import { Header } from "./components/Header"; // Verified path
 import { Footer } from "./components/Footer"; // Verified path
-
-
+import Script from "next/script";
 import { siteConfig } from "@/lib/data";
+import { GoogleTagManager } from '@next/third-parties/google'
+
 
 // SEO MASTER-STROKE: Global Metadata for Fine Steel Furniture
 // Supported languages and regions
@@ -43,9 +44,7 @@ export const metadata = {
       'max-snippet': -1,
     },
   },
-  alternates: {
-    canonical: '/',
-  },
+  // alternates with language variants already provided above — avoid duplicate keys
   openGraph: {
     title: "Fine Steel Furniture | Industrial Cupboards & Storage",
     description: "Heavy-duty MS and SS 304 storage units engineered for industrial longevity. Serving Vasai-Virar.",
@@ -110,11 +109,22 @@ export default function RootLayout({ children }) {
       <body
         className={` antialiased bg-white selection:bg-blue-100 selection:text-blue-900`}
       >
+        <GoogleTagManager gtmId="GTM-TL3WP377" />
+
         <Header />
         {/* Main Content Area */}
         <main className="min-h-screen flex flex-col">
           {children}
         </main>
+
+
+        <Script
+          id="clarity-script"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","v0onr0chuj");`,
+          }}
+        />
 
         <Footer />
       </body>

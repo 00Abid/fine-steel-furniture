@@ -124,18 +124,17 @@ export default function HomePage() {
                         </div>
                     </div>
 
-                    <div className="lg:col-span-5 relative">
-                        <div className="relative z-20 rounded-[2.5rem] overflow-hidden border border-slate-800 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] p-4">
+                    <div className="lg:col-span-4 relative mb-20">
+                        <div className="relative z-20 rounded-4xl overflow-hidden">
                             <Image
                                 src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=800&q=80"
                                 alt="High-Quality Industrial Steel Cupboard"
                                 width={800}
                                 height={1000}
-                                className="object-cover"
+                                className="object-cover rounded-4xl shadow-2xl"
                                 priority
                             />
                         </div>
-                        {/* Switched blur to Blue */}
                         <div className="absolute -top-10 -right-10 w-64 h-64 bg-blue-500/10 blur-[120px]" />
                     </div>
                 </div>
